@@ -323,124 +323,11 @@ function plugin_example_searchOptionsValues($options=array()) {
 
 //////////////////////////////
 
-// Hook done on before update item case
-function plugin_pre_item_update_example($item) {
-   /* Manipulate data if needed
-   if (!isset($item->input['comment'])) {
-      $item->input['comment'] = addslashes($item->fields['comment']);
-   }
-   $item->input['comment'] .= addslashes("\nUpdate: ".date('r'));
-   */
-   Session::addMessageAfterRedirect(__("Pre Update Computer Hook", 'example'), true);
-}
-
-
 // Hook done on update item case
 function plugin_item_update_example($item) {
    Session::addMessageAfterRedirect(sprintf(__("Update Computer Hook (%s)", 'example'),implode(',',$item->updates)), true);
    return true;
 }
-
-
-// Hook done on get empty item case
-function plugin_item_empty_example($item) {
-   if (empty($_SESSION['Already displayed "Empty Computer Hook"'])) {
-      Session::addMessageAfterRedirect(__("Empty Computer Hook", 'example'),true);
-      $_SESSION['Already displayed "Empty Computer Hook"'] = true;
-   }
-   return true;
-}
-
-
-// Hook done on before delete item case
-function plugin_pre_item_delete_example($object) {
-   // Manipulate data if needed
-   Session::addMessageAfterRedirect(__("Pre Delete Computer Hook", 'example'),true);
-}
-
-
-// Hook done on delete item case
-function plugin_item_delete_example($object) {
-   Session::addMessageAfterRedirect(__("Delete Computer Hook", 'example'),true);
-   return true;
-}
-
-
-// Hook done on before purge item case
-function plugin_pre_item_purge_example($object) {
-   // Manipulate data if needed
-   Session::addMessageAfterRedirect(__("Pre Purge Computer Hook", 'example'),true);
-}
-
-
-// Hook done on purge item case
-function plugin_item_purge_example($object) {
-   Session::addMessageAfterRedirect(__("Purge Computer Hook", 'example'),true);
-   return true;
-}
-
-
-// Hook done on before restore item case
-function plugin_pre_item_restore_example($item) {
-   // Manipulate data if needed
-   Session::addMessageAfterRedirect(__("Pre Restore Computer Hook", 'example'));
-}
-
-
-// Hook done on before restore item case
-function plugin_pre_item_restore_example2($item) {
-   // Manipulate data if needed
-   Session::addMessageAfterRedirect(__("Pre Restore Phone Hook", 'example'));
-}
-
-
-// Hook done on restore item case
-function plugin_item_restore_example($item) {
-   Session::addMessageAfterRedirect(__("Restore Computer Hook", 'example'));
-   return true;
-}
-
-
-// Hook done on restore item case
-function plugin_item_transfer_example($parm) {
-   //TRANS: %1$s is the source type, %2$d is the source ID, %3$d is the destination ID
-   Session::addMessageAfterRedirect(sprintf(__('Transfer Computer Hook %1$s %2$d -> %3$d', 'example'),$parm['type'],$parm['id'],
-                                     $parm['newID']));
-
-   return false;
-}
-
-// Do special actions for dynamic report
-function plugin_example_dynamicReport($parm) {
-   if ($parm["item_type"] == 'PluginExampleExample') {
-      // Do all what you want for export depending on $parm
-      echo "Personalized export for type ".$parm["display_type"];
-      echo 'with additional datas : <br>';
-      echo "Single data : add1 <br>";
-      print $parm['add1'].'<br>';
-      echo "Array data : add2 <br>";
-      Html::printCleanArray($parm['add2']);
-      // Return true if personalized display is done
-      return true;
-   }
-   // Return false if no specific display is done, then use standard display
-   return false;
-}
-
-
-// Add parameters to Html::printPager in search system
-function plugin_example_addParamFordynamicReport($itemtype) {
-   if ($itemtype == 'PluginExampleExample') {
-      // Return array data containing all params to add : may be single data or array data
-      // Search config are available from session variable
-      return array('add1' => $_SESSION['glpisearch'][$itemtype]['order'],
-                   'add2' => array('tutu' => 'Second Add',
-                                   'Other Data'));
-   }
-   // Return false or a non array data if not needed
-   return false;
-}
-
 
 // Install process for plugin : need to return true if succeeded
 function plugin_example_install() {
@@ -451,85 +338,33 @@ function plugin_example_install() {
 
    ProfileRight::addProfileRights(array('example:read'));
 
-   if (!TableExists("glpi_plugin_example_examples")) {
-      $query = "CREATE TABLE `glpi_plugin_example_examples` (
+  if (!TableExists("glpi_plugin_slackglpi_profiles")) {
+        $query = "CREATE TABLE `glpi_plugin_slackglpi_profiles` (
+                    `id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_profiles (id)',
+                    `right` char(1) collate utf8_unicode_ci default NULL,
+                    PRIMARY KEY  (`id`)
+                  ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+
+        $DB->query($query) or die("error creating glpi_plugin_slackglpi_profiles ". $DB->error());
+
+        //creation of the first profile after installation
+        $id = $_SESSION['glpiactiveprofile']['id'];
+        $query = "INSERT INTO glpi_plugin_slackglpi_profiles VALUES ('$id','w')";
+
+        $DB->query($query) or die("error populate glpi_plugin_slackglpi_profiles".$DB->error());
+   }
+
+   if (!TableExists("glpi_plugin_slackglpi_config")) {
+      $query = "CREATE TABLE `glpi_plugin_slackglpi_config` (
                   `id` int(11) NOT NULL auto_increment,
-                  `name` varchar(255) collate utf8_unicode_ci default NULL,
-                  `serial` varchar(255) collate utf8_unicode_ci NOT NULL,
-                  `plugin_example_dropdowns_id` int(11) NOT NULL default '0',
-                  `is_deleted` tinyint(1) NOT NULL default '0',
-                  `is_template` tinyint(1) NOT NULL default '0',
-                  `template_name` varchar(255) collate utf8_unicode_ci default NULL,
+                  `webhook_url` varchar(255) collate utf8_unicode_ci default NULL,
+                  `on_creation` tinyint(1) NOT NULL default '1',
+                  `on_update` tinyint(1) NOT NULL default '0',
                 PRIMARY KEY (`id`)
                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-      $DB->query($query) or die("error creating glpi_plugin_example_examples ". $DB->error());
-
-      $query = "INSERT INTO `glpi_plugin_example_examples`
-                       (`id`, `name`, `serial`, `plugin_example_dropdowns_id`, `is_deleted`,
-                        `is_template`, `template_name`)
-                VALUES (1, 'example 1', 'serial 1', 1, 0, 0, NULL),
-                       (2, 'example 2', 'serial 2', 2, 0, 0, NULL),
-                       (3, 'example 3', 'serial 3', 1, 0, 0, NULL)";
-      $DB->query($query) or die("error populate glpi_plugin_example ". $DB->error());
+      $DB->query($query) or die("error creating glpi_plugin_slackglpi_config ". $DB->error());
    }
 
-   if (!TableExists("glpi_plugin_example_dropdowns")) {
-      $query = "CREATE TABLE `glpi_plugin_example_dropdowns` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `name` varchar(255) collate utf8_unicode_ci default NULL,
-                  `comment` text collate utf8_unicode_ci,
-                PRIMARY KEY  (`id`),
-                KEY `name` (`name`)
-               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-      $DB->query($query) or die("error creating glpi_plugin_example_dropdowns". $DB->error());
-
-      $query = "INSERT INTO `glpi_plugin_example_dropdowns`
-                       (`id`, `name`, `comment`)
-                VALUES (1, 'dp 1', 'comment 1'),
-                       (2, 'dp2', 'comment 2')";
-
-      $DB->query($query) or die("error populate glpi_plugin_example_dropdowns". $DB->error());
-
-   }
-
-   if (!TableExists('glpi_plugin_example_devicecameras')) {
-      $query = "CREATE TABLE `glpi_plugin_example_devicecameras` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `designation` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `comment` text COLLATE utf8_unicode_ci,
-                  `manufacturers_id` int(11) NOT NULL DEFAULT '0',
-                  PRIMARY KEY (`id`),
-                  KEY `designation` (`designation`),
-                  KEY `manufacturers_id` (`manufacturers_id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-      $DB->query($query) or die("error creating glpi_plugin_example_examples ". $DB->error());
-   }
-
-   if (!TableExists('glpi_plugin_example_items_devicecameras')) {
-      $query = "CREATE TABLE `glpi_plugin_example_items_devicecameras` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `items_id` int(11) NOT NULL DEFAULT '0',
-                  `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `plugin_example_devicecameras_id` int(11) NOT NULL DEFAULT '0',
-                  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-                  `is_dynamic` tinyint(1) NOT NULL DEFAULT '0',
-                  PRIMARY KEY (`id`),
-                  KEY `computers_id` (`items_id`),
-                  KEY `plugin_example_devicecameras_id` (`plugin_example_devicecameras_id`),
-                  KEY `is_deleted` (`is_deleted`),
-                  KEY `is_dynamic` (`is_dynamic`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-      $DB->query($query) or die("error creating glpi_plugin_example_examples ". $DB->error());
-   }
-
-   // To be called for each task the plugin manage
-   // task in class
-   CronTask::Register('PluginExampleExample', 'Sample', DAY_TIMESTAMP, array('param' => 50));
-   return true;
 }
 
 
@@ -538,7 +373,7 @@ function plugin_example_uninstall() {
    global $DB;
 
    $config = new Config();
-   $config->deleteConfigurationValues('plugin:Example', array('configuration' => false));
+   $config->deleteConfigurationValues('plugin:Slackglpi', array('configuration' => false));
 
    ProfileRight::deleteProfileRights(array('example:read'));
 
@@ -550,30 +385,13 @@ function plugin_example_uninstall() {
       $notif->delete($data);
    }
    // Old version tables
-   if (TableExists("glpi_dropdown_plugin_example")) {
-      $query = "DROP TABLE `glpi_dropdown_plugin_example`";
-      $DB->query($query) or die("error deleting glpi_dropdown_plugin_example");
+   if (TableExists("glpi_plugin_slackglpi_profiles")) {
+      $query = "DROP TABLE `glpi_plugin_slackglpi_profiles`";
+      $DB->query($query) or die("error deleting glpi_plugin_slackglpi_profiles");
    }
-   if (TableExists("glpi_plugin_example")) {
-      $query = "DROP TABLE `glpi_plugin_example`";
-      $DB->query($query) or die("error deleting glpi_plugin_example");
-   }
-   // Current version tables
-   if (TableExists("glpi_plugin_example_example")) {
-      $query = "DROP TABLE `glpi_plugin_example_example`";
-      $DB->query($query) or die("error deleting glpi_plugin_example_example");
-   }
-   if (TableExists("glpi_plugin_example_dropdowns")) {
-      $query = "DROP TABLE `glpi_plugin_example_dropdowns`;";
-      $DB->query($query) or die("error deleting glpi_plugin_example_dropdowns");
-   }
-   if (TableExists("glpi_plugin_example_devicecameras")) {
-      $query = "DROP TABLE `glpi_plugin_example_devicecameras`;";
-      $DB->query($query) or die("error deleting glpi_plugin_example_devicecameras");
-   }
-   if (TableExists("glpi_plugin_example_items_devicecameras")) {
-      $query = "DROP TABLE `glpi_plugin_example_items_devicecameras`;";
-      $DB->query($query) or die("error deleting glpi_plugin_example_items_devicecameras");
+   if (TableExists("glpi_plugin_slackglpi_config")) {
+      $query = "DROP TABLE `glpi_plugin_slackglpi_config`";
+      $DB->query($query) or die("error deleting glpi_plugin_slackglpi_config");
    }
    return true;
 }
@@ -602,31 +420,6 @@ function plugin_example_postinit() {
    foreach (Infocom::getItemtypesThatCanHave() as $type) {
       // do something
    }
-}
-
-
-/**
- * Hook to add more data from ldap
- * fields from plugin_retrieve_more_field_from_ldap_example
- *
- * @param $datas   array
- *
- * @return un tableau
- **/
-function plugin_retrieve_more_data_from_ldap_example(array $datas) {
-   return $datas;
-}
-
-
-/**
- * Hook to add more fields from LDAP
- *
- * @param $fields   array
- *
- * @return un tableau
- **/
-function plugin_retrieve_more_field_from_ldap_example($fields) {
-   return $fields;
 }
 
 // Check to add to status page
