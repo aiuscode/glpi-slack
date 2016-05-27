@@ -36,132 +36,35 @@
 function plugin_init_glpislack() {
    global $PLUGIN_HOOKS,$CFG_GLPI;
 
-   // Params : plugin name - string type - ID - Array of attributes
-   // No specific information passed so not needed
-   //Plugin::registerClass('PluginExampleExample',
-   //                      array('classname'              => 'PluginExampleExample',
-   //                        ));
-
-   Plugin::registerClass('PluginGlpislackConfig', array('addtabon' => 'Config'));
-
-   // Params : plugin name - string type - ID - Array of attributes
-   Plugin::registerClass('PluginGlpislackDropdown');
-
-  
-   // Display a menu entry ?
-   // $_SESSION["glpi_plugin_example_profile"]['example'] = 'w';
-   // if (isset($_SESSION["glpi_plugin_example_profile"])) { // Right set in change_profile hook
-   //    $PLUGIN_HOOKS['menu_toadd']['example'] = array('plugins' => 'PluginExampleExample',
-   //                                                  'tools'   => 'PluginExampleExample');
-      
-      // Old menu style
-//       $PLUGIN_HOOKS['menu_entry']['example'] = 'front/example.php';
-// 
-//       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['title'] = "Search";
-//       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['page']  = '/plugins/example/front/example.php';
-//       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['search'] = '/plugins/example/front/example.php';
-//       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['add']    = '/plugins/example/front/example.form.php';
-//       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['config'] = '/plugins/example/index.php';
-//       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/example/index.php';
-//       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links'][__s('Test link', 'example')] = '/plugins/example/index.php';
-
-   //    $PLUGIN_HOOKS["helpdesk_menu_entry"]['example'] = true;
-   // }
-
-   // Config page
-   if (Session::haveRight('config',UPDATE)) {
-      $PLUGIN_HOOKS['config_page']['glpislack'] = 'config.php';
-   }
-
-   // Init session
-   //$PLUGIN_HOOKS['init_session']['example'] = 'plugin_init_session_example';
-   // Change profile
-   // $PLUGIN_HOOKS['change_profile']['example'] = 'plugin_change_profile_example';
-   // Change entity
-   //$PLUGIN_HOOKS['change_entity']['example'] = 'plugin_change_entity_example';
-
-   // Item action event // See define.php for defined ITEM_TYPE
-   // $PLUGIN_HOOKS['pre_item_update']['example'] = array('Computer' => 'plugin_pre_item_update_example');
-   $PLUGIN_HOOKS['item_update']['glpislack']     = array('Computer' => 'plugin_item_update_Glpislack');
-
-   // $PLUGIN_HOOKS['item_empty']['example']     = array('Computer' => 'plugin_item_empty_example');
-
-   // // Example using a method in class
-   // $PLUGIN_HOOKS['pre_item_add']['example']    = array('Computer' => array('PluginExampleExample',
-   //                                                                         'pre_item_add_computer'));
-   // $PLUGIN_HOOKS['post_prepareadd']['example'] = array('Computer' => array('PluginExampleExample',
-   //                                                                         'post_prepareadd_computer'));
-   // $PLUGIN_HOOKS['item_add']['example']        = array('Computer' => array('PluginExampleExample',
-   //                                                                         'item_add_computer'));
-
-   // $PLUGIN_HOOKS['pre_item_delete']['example'] = array('Computer' => 'plugin_pre_item_delete_example');
-   // $PLUGIN_HOOKS['item_delete']['example']     = array('Computer' => 'plugin_item_delete_example');
-
-   // Example using the same function
-   // $PLUGIN_HOOKS['pre_item_purge']['example'] = array('Computer' => 'plugin_pre_item_purge_example',
-   //                                                    'Phone'    => 'plugin_pre_item_purge_example');
-   // $PLUGIN_HOOKS['item_purge']['example']     = array('Computer' => 'plugin_item_purge_example',
-   //                                                    'Phone'    => 'plugin_item_purge_example');
-
-   // // Example with 2 different functions
-   // $PLUGIN_HOOKS['pre_item_restore']['example'] = array('Computer' => 'plugin_pre_item_restore_example',
-   //                                                       'Phone'   => 'plugin_pre_item_restore_example2');
-   // $PLUGIN_HOOKS['item_restore']['example']     = array('Computer' => 'plugin_item_restore_example');
-
-   // // Add event to GLPI core itemtype, event will be raised by the plugin.
-   // // See plugin_example_uninstall for cleanup of notification
-   // $PLUGIN_HOOKS['item_get_events']['example']
-   //                               = array('NotificationTargetTicket' => 'plugin_example_get_events');
-
-   // // Add datas to GLPI core itemtype for notifications template.
-   // $PLUGIN_HOOKS['item_get_datas']['example']
-   //                               = array('NotificationTargetTicket' => 'plugin_example_get_datas');
-
-   // $PLUGIN_HOOKS['item_transfer']['example'] = 'plugin_item_transfer_example';
-
-   // function to populate planning
-   // No more used since GLPI 0.84
-   // $PLUGIN_HOOKS['planning_populate']['example'] = 'plugin_planning_populate_example';
-   // Use instead : add class to planning types and define populatePlanning in class
-   // $CFG_GLPI['planning_types'][] = 'PluginExampleExample';
-
-   //function to display planning items
-   // No more used sinc GLPi 0.84
-   // $PLUGIN_HOOKS['display_planning']['example'] = 'plugin_display_planning_example';
-   // Use instead : displayPlanningItem of the specific itemtype
-
-   // Massive Action definition
-   // $PLUGIN_HOOKS['use_massive_action']['example'] = 1;
-
-   // $PLUGIN_HOOKS['assign_to_ticket']['example'] = 1;
-
-   // Add specific files to add to the header : javascript or css
-   // $PLUGIN_HOOKS['add_javascript']['example'] = 'example.js';
-   // $PLUGIN_HOOKS['add_css']['example']        = 'example.css';
-
-   // request more attributes from ldap
-   //$PLUGIN_HOOKS['retrieve_more_field_from_ldap']['example']="plugin_retrieve_more_field_from_ldap_example";
-
-   // Retrieve others datas from LDAP
-   //$PLUGIN_HOOKS['retrieve_more_data_from_ldap']['example']="plugin_retrieve_more_data_from_ldap_example";
-
-   // Reports
-   // $PLUGIN_HOOKS['reports']['example'] = array('report.php'       => 'New Report',
-   //                                            'report.php?other' => 'New Report 2');
-
-   // // Stats
-   // $PLUGIN_HOOKS['stats']['example'] = array('stat.php'       => 'New stat',
-   //                                           'stat.php?other' => 'New stats 2',);
-
-   $PLUGIN_HOOKS['post_init']['glpislack'] = 'plugin_Glpislack_postinit';
-
-   $PLUGIN_HOOKS['status']['glpislack'] = 'plugin_Glpislack_Status';
-   
-   // CSRF compliance : All actions must be done via POST and forms closed by Html::closeForm();
    $PLUGIN_HOOKS['csrf_compliant']['glpislack'] = true;
 
-   $PLUGIN_HOOKS['display_central']['glpislack'] = "plugin_Glpislack_display_central";
-   $PLUGIN_HOOKS['display_login']['glpislack'] = "plugin_Glpislack_display_login";
+   $PLUGIN_HOOKS['change_profile']['glpislack'] = array('PluginGlpislackProfile', 'initProfile');
+
+   Plugin::registerClass('PluginGlpislackProfile',
+                         array('addtabon' => array('Profile')));
+
+   
+   
+   if (Session::getLoginUserID()) {
+      if (Session::haveRight('plugin_glpislack', READ)) {
+         $PLUGIN_HOOKS["menu_toadd"]['glpislack'] = array('tools'  => 'PluginGlpislackMenu');
+      }
+
+      if (Session::haveRight('plugin_glpislack', UPDATE)) {
+         $PLUGIN_HOOKS['use_massive_action']['glpislack']   = 1;
+      }
+
+      // Config page
+      if (Session::haveRight("config", UPDATE)) {
+         $PLUGIN_HOOKS['config_page']['glpislack']             = 'front/config.form.php';
+      }
+
+      // // Add specific files to add to the header : javascript or css
+      // $PLUGIN_HOOKS['add_css']['glpislack']        = "glpislack.css";
+      // $PLUGIN_HOOKS['add_javascript']['glpislack'] = 'glpislack.js';
+
+      $PLUGIN_HOOKS['post_init']['glpislack'] = array('PluginGlpislack', 'postinit');
+   }
 }
 
 
