@@ -33,7 +33,7 @@
 // ----------------------------------------------------------------------
 
 // Init the hooks of the plugins -Needed
-function plugin_init_slackglpi() {
+function plugin_init_glpislack() {
    global $PLUGIN_HOOKS,$CFG_GLPI;
 
    // Params : plugin name - string type - ID - Array of attributes
@@ -42,10 +42,10 @@ function plugin_init_slackglpi() {
    //                      array('classname'              => 'PluginExampleExample',
    //                        ));
 
-   Plugin::registerClass('PluginSlackGlpiConfig', array('addtabon' => 'Config'));
+   Plugin::registerClass('PluginGlpislackConfig', array('addtabon' => 'Config'));
 
    // Params : plugin name - string type - ID - Array of attributes
-   Plugin::registerClass('PluginSlackGlpiDropdown');
+   Plugin::registerClass('PluginGlpislackDropdown');
 
   
    // Display a menu entry ?
@@ -70,7 +70,7 @@ function plugin_init_slackglpi() {
 
    // Config page
    if (Session::haveRight('config',UPDATE)) {
-      $PLUGIN_HOOKS['config_page']['PluginSlackGlpi'] = 'config.php';
+      $PLUGIN_HOOKS['config_page']['glpislack'] = 'config.php';
    }
 
    // Init session
@@ -82,7 +82,7 @@ function plugin_init_slackglpi() {
 
    // Item action event // See define.php for defined ITEM_TYPE
    // $PLUGIN_HOOKS['pre_item_update']['example'] = array('Computer' => 'plugin_pre_item_update_example');
-   $PLUGIN_HOOKS['item_update']['PluginSlackGlpi']     = array('Computer' => 'plugin_item_update_SlackGlpi');
+   $PLUGIN_HOOKS['item_update']['glpislack']     = array('Computer' => 'plugin_item_update_Glpislack');
 
    // $PLUGIN_HOOKS['item_empty']['example']     = array('Computer' => 'plugin_item_empty_example');
 
@@ -153,24 +153,24 @@ function plugin_init_slackglpi() {
    // $PLUGIN_HOOKS['stats']['example'] = array('stat.php'       => 'New stat',
    //                                           'stat.php?other' => 'New stats 2',);
 
-   $PLUGIN_HOOKS['post_init']['PluginSlackGlpi'] = 'plugin_slackglpi_postinit';
+   $PLUGIN_HOOKS['post_init']['glpislack'] = 'plugin_Glpislack_postinit';
 
-   $PLUGIN_HOOKS['status']['PluginSlackGlpi'] = 'plugin_slackglpi_Status';
+   $PLUGIN_HOOKS['status']['glpislack'] = 'plugin_Glpislack_Status';
    
    // CSRF compliance : All actions must be done via POST and forms closed by Html::closeForm();
-   $PLUGIN_HOOKS['csrf_compliant']['PluginSlackGlpi'] = true;
+   $PLUGIN_HOOKS['csrf_compliant']['glpislack'] = true;
 
-   $PLUGIN_HOOKS['display_central']['PluginSlackGlpi'] = "plugin_slackglpi_display_central";
-   $PLUGIN_HOOKS['display_login']['PluginSlackGlpi'] = "plugin_slackglpi_display_login";
+   $PLUGIN_HOOKS['display_central']['glpislack'] = "plugin_Glpislack_display_central";
+   $PLUGIN_HOOKS['display_login']['glpislack'] = "plugin_Glpislack_display_login";
 }
 
 
 // Get the name and the version of the plugin - Needed
-function plugin_version_example() {
+function plugin_version_glpislack() {
 
-   return array('name'           => 'Slack notifier',
+   return array('name'           => 'Slack Notifier',
                 'version'        => '0.1',
-                'author'         => 'Bertrand ENNOUCHY',
+                'author'         => 'Bertrand Ennouchy',
                 'license'        => 'GPLv2+',
                 'homepage'       => 'https://github.com/Sburb/glpi-slack',
                 'minGlpiVersion' => '0.85');// For compatibility / no install in version < 0.80
@@ -178,7 +178,7 @@ function plugin_version_example() {
 
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
-function plugin_example_check_prerequisites() {
+function plugin_glpislack_check_prerequisites() {
 
    // Strict version check (could be less strict, or could allow various version)
    if (version_compare(GLPI_VERSION,'0.85','lt') /*|| version_compare(GLPI_VERSION,'0.84','gt')*/) {
@@ -191,7 +191,7 @@ function plugin_example_check_prerequisites() {
 
 // Check configuration process for plugin : need to return true if succeeded
 // Can display a message only if failure and $verbose is true
-function plugin_example_check_config($verbose=false) {
+function plugin_glpislack_check_config($verbose=false) {
    if (true) { // Your configuration check
       return true;
    }
