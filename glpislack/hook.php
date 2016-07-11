@@ -330,29 +330,15 @@ function plugin_item_update_example($item) {
 }
 
 // Install process for plugin : need to return true if succeeded
-function plugin_example_install() {
+function plugin_glpislack_install() {
    global $DB;
 
    $config = new Config();
-   $config->setConfigurationValues('plugin:Example', array('configuration' => false));
+   $config->setConfigurationValues('plugin:slackglpi', array('configuration' => false));
 
-   ProfileRight::addProfileRights(array('example:read'));
-
-  if (!TableExists("glpi_plugin_slackglpi_profiles")) {
-        $query = "CREATE TABLE `glpi_plugin_slackglpi_profiles` (
-                    `id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_profiles (id)',
-                    `right` char(1) collate utf8_unicode_ci default NULL,
-                    PRIMARY KEY  (`id`)
-                  ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-        $DB->query($query) or die("error creating glpi_plugin_slackglpi_profiles ". $DB->error());
-
-        //creation of the first profile after installation
-        $id = $_SESSION['glpiactiveprofile']['id'];
-        $query = "INSERT INTO glpi_plugin_slackglpi_profiles VALUES ('$id','w')";
-
-        $DB->query($query) or die("error populate glpi_plugin_slackglpi_profiles".$DB->error());
-   }
+   if (Session::haveRight('plugin_slackglpi', READ)) {
+         ProfileRight::addProfileRights(array('plugin_slackglpi:write'));
+      }
 
    if (!TableExists("glpi_plugin_slackglpi_config")) {
       $query = "CREATE TABLE `glpi_plugin_slackglpi_config` (
@@ -363,19 +349,18 @@ function plugin_example_install() {
                 PRIMARY KEY (`id`)
                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
       $DB->query($query) or die("error creating glpi_plugin_slackglpi_config ". $DB->error());
+      return true;
    }
-
 }
 
-
 // Uninstall process for plugin : need to return true if succeeded
-function plugin_example_uninstall() {
+function plugin_glpislack_uninstall() {
    global $DB;
 
    $config = new Config();
-   $config->deleteConfigurationValues('plugin:Slackglpi', array('configuration' => false));
+   $config->deleteConfigurationValues('plugin:slackglpi', array('configuration' => false));
 
-   ProfileRight::deleteProfileRights(array('example:read'));
+   ProfileRight::deleteProfileRights(array('plugin_slackglpi:read'));
 
    $notif = new Notification();
    $options = array('itemtype' => 'Ticket',
@@ -423,7 +408,7 @@ function plugin_example_postinit() {
 }
 
 // Check to add to status page
-function plugin_example_Status($param) {
+function plugin_glpislack_Status($param) {
    // Do checks (no check for example)
    $ok = true;
    echo "example plugin: example";
@@ -438,7 +423,7 @@ function plugin_example_Status($param) {
    return $param;
 }
 
-function plugin_example_display_central() {
+function plugin_glpislack_display_central() {
    echo "<tr><th colspan='2'>";
    echo "<div style='text-align:center; font-size:2em'>";
    echo __("Plugin example displays on central page", "example");
@@ -446,7 +431,7 @@ function plugin_example_display_central() {
    echo "</th></tr>";
 }
 
-function plugin_example_display_login() {
+function plugin_glpislack_display_login() {
    echo "<div style='text-align:center; font-size:2em'>";
    echo __("Plugin example displays on login page", "example");
    echo "</div>";
